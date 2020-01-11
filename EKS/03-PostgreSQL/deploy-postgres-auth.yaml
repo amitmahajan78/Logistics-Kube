@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: logistics-auth-db
+  labels:
+    app: postgres-auth
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: postgres-auth
+    tier: database
+  clusterIP: None
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: logistics-auth-db
+  labels:
+    app: postgres-auth
+spec:
+  selector:
+    matchLabels:
+      app: postgres-auth
+      tier: database
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres-auth
+        tier: database
+    spec:
+      containers:
+        - image: postgres:latest
+          name: postgresdb
+          envFrom:
+            - configMapRef:
+                name: authdb-config
+          ports:
+            - containerPort: 5432
+              name: postgres-auth
+          volumeMounts:
+            - name: authdb-persistent-storage
+              mountPath: /var/lib/postgresql/auth/data
+      volumes:
+        - name: authdb-persistent-storage
+          persistentVolumeClaim:
+            claimName: efs-postgres

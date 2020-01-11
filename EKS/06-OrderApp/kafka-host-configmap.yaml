@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafkahost-config
+  labels:
+    app: kafkahost
+data:
+  KAFKA_HOST: kafka-cluster-kafka-bootstrap

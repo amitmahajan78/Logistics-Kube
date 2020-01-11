@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: logistics-stock-db
+  labels:
+    app: postgres-stock
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: postgres-stock
+    tier: database
+  clusterIP: None
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: logistics-stock-db
+  labels:
+    app: postgres-stock
+spec:
+  selector:
+    matchLabels:
+      app: postgres-stock
+      tier: database
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres-stock
+        tier: database
+    spec:
+      containers:
+        - image: postgres:latest
+          name: postgresdb
+          envFrom:
+            - configMapRef:
+                name: stockdb-config
+          ports:
+            - containerPort: 5432
+              name: postgres-stock
+          volumeMounts:
+            - name: stockdb-persistent-storage
+              mountPath: /var/lib/postgresql/stock/data
+      volumes:
+        - name: stockdb-persistent-storage
+          persistentVolumeClaim:
+            claimName: efs-postgres

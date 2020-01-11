@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: logistics-stock-service
+  labels:
+    app: logistics
+spec:
+  ports:
+    - port: 9004
+      targetPort: 9004
+  selector:
+    app: stock-service
+    tier: apis
+  type: LoadBalancer
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: logistics-stock-service
+  labels:
+    app: logistics
+spec:
+  selector:
+    matchLabels:
+      app: stock-service
+      tier: apis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: stock-service
+        tier: apis
+    spec:
+      containers:
+        - image: amitmahajan/logistics-stock-api:0.1
+          name: stock-service
+          env:
+            - name: POSTGRESQL_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: stockdb-config
+                  key: POSTGRES_USER
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: stockdb-config
+                  key: POSTGRES_PASSWORD
+            - name: DB_HOST_IP
+              value: logistics-stock-db
+            - name: AUTH_SERVER_URL
+              value: logistics-auth-service
+            - name: KAFKA_INFRA_HOST_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: kafkahost-config
+                  key: KAFKA_HOST
+          ports:
+            - containerPort: 9004
+              name: stock-service

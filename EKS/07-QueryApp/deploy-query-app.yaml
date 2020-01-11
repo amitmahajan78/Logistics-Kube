@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: logistics-query-service
+  labels:
+    app: logistics
+spec:
+  ports:
+    - port: 9003
+      targetPort: 9003
+  selector:
+    app: query-service
+    tier: apis
+  type: LoadBalancer
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: logistics-query-service
+  labels:
+    app: logistics
+spec:
+  selector:
+    matchLabels:
+      app: query-service
+      tier: apis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: query-service
+        tier: apis
+    spec:
+      containers:
+        - image: amitmahajan/logistics-query-api:0.1
+          name: query-service
+          env:
+            - name: POSTGRESQL_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: querydb-config
+                  key: POSTGRES_USER
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: querydb-config
+                  key: POSTGRES_PASSWORD
+            - name: DB_HOST_IP
+              value: logistics-query-db
+            - name: AUTH_SERVER_URL
+              value: logistics-auth-service
+            - name: KAFKA_INFRA_HOST_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: kafkahost-config
+                  key: KAFKA_HOST
+          ports:
+            - containerPort: 9003
+              name: query-service
