@@ -1,0 +1,19 @@
+stages:
+  - deploy
+
+deploy_live:
+  image:
+    name: lachlanevenson/k8s-kubectl:latest
+    entrypoint: ["/bin/sh", "-c"]
+  stage: deploy
+  environment:
+    name: live
+  only:
+    - tags
+  when: manual
+  script:
+    - kubectl version
+    - cd EKS/09-ShipmentApp
+    - kubectl apply -f deploy-shipment-app.yaml --namespace=project-logistics
+    - kubectl rollout status -f deploy-shipment-app.yaml --namespace=project-logistics
+    - kubectl get deploy,svc,ing,pod -l --namespace=project-logistics

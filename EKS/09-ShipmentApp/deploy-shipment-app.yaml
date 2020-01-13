@@ -57,4 +57,4 @@ spec:
                   key: KAFKA_HOST
           ports:
             - containerPort: 9002
-              name: shipment-service
+              name: shipment-svc

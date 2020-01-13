@@ -1,0 +1,25 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN5RENDQWJDZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJd01ERXdPVEU0TlRjeE9Wb1hEVE13TURFd05qRTROVGN4T1Zvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTCt3CnRuVmVRRk5mRFkreGRCVENnRDhxUGFudkJoMDVvcnA0eENPbXY3Sk1VYmJhTW5pYXRtbUZ3dHNubWlNazdzcXMKc3ZseVhIVWxLajJoZkxicGFJMXdVN3VWZElibEVXRVV3MEcyNldXU3ptbTNvVGhqWit6NUZ1cW1PaGM2MEIrRQpjOGRLNkJzYkpRbllwQ2FBUWljSmNqTThBaGFkZjhkcWJVUFcyMnNIdDNoZmxMNHVKQTJlWmxZWU90RGRnL3NMCld5WDU5ZG82WU90TW1tUEpDd3NHREZ1RjdTUkYwcVNnQWNlV05FcTRqQUkzMFIyNVdUSzFBbWhWN0xHUGNiQXEKcisrcm1NL1FDNnI3Ukk3aU0yQy9DZ1hvdGxLRkFIZzBlWEwyTUNJNWFXMmY1dGV3M0gvQ1ZsOFV6cVVNY1FqWQpBdjFYVHA2S0FtWDEyVmZBZk1VQ0F3RUFBYU1qTUNFd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFKYUxYaUt1RDFxeWRGc3V5cWQ4Vks2VURKK3kKMTNLOVhxOFUyb2Y0amtVRFVDR05vWW0rbitieXd0YUlmK3ErVHFEc1hsWWNYVFhpVmhKOE4yZjZPc1dMei8zZQo5UjFzaEtidzJRZytTR0xTRVBuU0VSYTd3MW52VnVZbzBaaVFoSGszNEhVZlhoUE5rcTI4c1hvc095RVdyQUJsCk9BL21pb3luU2kxQUdkMXJHTE41aVd2UmNJTkNFelM4TWFWTkFuY0hKVzc3UlBtcmhoaWVvTWM0a3BVSkJ0M0IKSHpBMURuSFJneVhlRFJTSTlZY2tHYksveDlQNXJiT1BiMTlXamRVYUZHMHVVc0VoZFRqaFNhSjFsYjc4eHdneAp3RDlPMjdrMWlnK2c0RVJWbHplNmxHenZjbXp0V1pPV0FwUzJNa2ZyRWcxUlVDdHN0VWpzSXVsVXV6bz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    server: https://B52CEFCDE42DBCC56841FB3220C65FFF.sk1.eu-west-2.eks.amazonaws.com
+  name: eks-cluster.eu-west-2.eksctl.io
+contexts:
+- context:
+    cluster: eks-cluster.eu-west-2.eksctl.io
+    user: admin@eks-cluster.eu-west-2.eksctl.io
+  name: admin@eks-cluster.eu-west-2.eksctl.io
+current-context: admin@eks-cluster.eu-west-2.eksctl.io
+kind: Config
+preferences: {}
+users:
+- name: admin@eks-cluster.eu-west-2.eksctl.io
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1alpha1
+      args:
+      - token
+      - -i
+      - eks-cluster
+      command: aws-iam-authenticator
+      env: null
