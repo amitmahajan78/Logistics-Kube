@@ -13,4 +13,4 @@ deploy_live:
     - kubectl version
     - cd EKS/09-ShipmentApp
     - kubectl apply -f deploy-shipment-app.yaml --namespace=project-logistics
-    - kubectl get deploy,svc,ing,pod -l --namespace=project-logistics
+    - kubectl get deploy,pods,svc --namespace=project-logistics
