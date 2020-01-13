@@ -26,6 +26,8 @@ deploy_kafka:
   environment:
     name: live
   when: manual
+  before_script:
+    - apk add --update curl && rm -rf /var/cache/apk/*
   script:
     - kubectl version
     - cd EKS/05-Kafka
