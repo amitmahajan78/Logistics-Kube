@@ -66,12 +66,12 @@ deployment.extensions "strimzi-cluster-operator" deleted
 
 # Kafka
 
-kubectl delete pvc data-kafka-cluster-kafka-0
-kubectl delete pvc data-kafka-cluster-kafka-1
-kubectl delete pvc data-kafka-cluster-kafka-2
+kubectl delete pvc data-kafka-cluster-kafka-0 --namespace=project-logistics
+kubectl delete pvc data-kafka-cluster-kafka-1 --namespace=project-logistics
+kubectl delete pvc data-kafka-cluster-kafka-2 --namespace=project-logistics
 
 # Zookeeper
 
-kubectl delete pvc data-kafka-cluster-zookeeper-0
-kubectl delete pvc data-kafka-cluster-zookeeper-1
-kubectl delete pvc data-kafka-cluster-zookeeper-2
+kubectl delete pvc data-kafka-cluster-zookeeper-0 --namespace=project-logistics
+kubectl delete pvc data-kafka-cluster-zookeeper-1 --namespace=project-logistics
+kubectl delete pvc data-kafka-cluster-zookeeper-2 --namespace=project-logistics

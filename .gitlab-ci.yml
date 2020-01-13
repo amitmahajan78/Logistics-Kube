@@ -1,16 +1,48 @@
 stages:
-  - deploy
+  - storage
+  - messaging
+  - apps
 
-deploy_live:
+deploy_efs:
   image:
     name: lachlanevenson/k8s-kubectl:latest
     entrypoint: ["/bin/sh", "-c"]
-  stage: deploy
+  stage: storage
   environment:
     name: live
   when: manual
   script:
     - kubectl version
-    - cd EKS/09-ShipmentApp
-    - kubectl apply -f deploy-shipment-app.yaml --namespace=project-logistics
-    - kubectl get deploy,pods,svc --namespace=project-logistics
+    - cd EKS/02-EFS
+    - kubectl create namespace project-logistics
+    - kubectl apply -f create-rbac.yaml --namespace=project-logistics
+    - kubectl apply -f create-efs-provisioner.yaml --namespace=project-logistics
+
+deploy_kafka:
+  image:
+    name: lachlanevenson/k8s-kubectl:latest
+    entrypoint: ["/bin/sh", "-c"]
+  stage: messaging
+  environment:
+    name: live
+  when: manual
+  script:
+    - kubectl version
+    - cd EKS/05-Kafka
+    - mkdir eks-kafka-strimzi
+    - cd eks-kafka-strimzi
+    - curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
+    - chmod +x get_helm.sh
+    - ./get_helm.sh
+    - kubectl apply -f rbac.yaml --namespace=project-logistics
+    - helm init --service-account=tiller
+    - helm repo add strimzi http://strimzi.io/charts/
+    - helm search strim
+    - helm install strimzi/strimzi-kafka-operator --namespace=project-logistics
+    - sleep 20
+    - kubectl get all --namespace=project-logistics
+    - kubectl apply -f kafka-cluster.Kafka.yaml --namespace=project-logistics
+    - sleep 50
+    - kubectl get statefulsets.apps,pod,deployments,svc --namespace=project-logistics
+    - kubectl get pv,pvc --namespace=project-logistics
+    - kubectl apply -f create-topics.yaml --namespace=project-logistics

@@ -21,6 +21,6 @@ kubectl create -f deploy-postgres-auth.yaml --namespace=project-logistics
 ## Test Postgres connection
 
 ```
-kubectl exec -it logistics-auth-db-849bf69775-mhqsx --namespace=project-logistics bash
+kubectl exec -it logistics-auth-db-764ffcb695-9rqbs --namespace=project-logistics bash
 psql -h localhost -U postgresadmin --password -p 5432 auth_server
 ```
