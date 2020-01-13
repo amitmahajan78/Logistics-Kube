@@ -39,7 +39,7 @@ deploy_kafka:
     - chmod +x get_helm.sh
     - ./get_helm.sh
     - cd ../
-    - kubectl apply -f rbac.yaml --namespace=project-logistics
+    - kubectl apply -f rbac.yaml
     - helm init --service-account=tiller
     - helm repo add strimzi http://strimzi.io/charts/
     - helm search strim
