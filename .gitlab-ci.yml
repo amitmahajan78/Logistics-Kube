@@ -77,13 +77,14 @@ deploy_order:
   stage: app
   environment:
     name: live
-  when: manual
   script:
     - kubectl version
     - cd EKS/06-OrderApp
     - kubectl create -f orderdb-configmap.yaml --namespace=project-logistics
     - kubectl create -f deploy-postgres-order.yaml --namespace=project-logistics
     - kubectl create -f deploy-order-app.yaml --namespace=project-logistics
+  dependencies:
+    - deploy_auth
 
 deploy_query:
   image:
@@ -92,13 +93,14 @@ deploy_query:
   stage: app
   environment:
     name: live
-  when: manual
   script:
     - kubectl version
     - cd EKS/07-QueryApp
     - kubectl create -f querydb-configmap.yaml --namespace=project-logistics
     - kubectl create -f deploy-postgres-query.yaml --namespace=project-logistics
     - kubectl create -f deploy-query-app.yaml --namespace=project-logistics
+  dependencies:
+    - deploy_auth
 
 deploy_stock:
   image:
@@ -107,13 +109,14 @@ deploy_stock:
   stage: app
   environment:
     name: live
-  when: manual
   script:
     - kubectl version
     - cd EKS/08-StockApp
     - kubectl create -f stockdb-configmap.yaml --namespace=project-logistics
     - kubectl create -f deploy-postgres-stock.yaml --namespace=project-logistics
     - kubectl create -f deploy-stock-app.yaml --namespace=project-logistics
+  dependencies:
+    - deploy_auth
 
 deploy_shipment:
   image:
@@ -122,8 +125,10 @@ deploy_shipment:
   stage: app
   environment:
     name: live
-  when: manual
   script:
     - kubectl version
     - cd EKS/09-ShipmentApp
     - kubectl create -f deploy-shipment-app.yaml --namespace=project-logistics
+  dependencies:
+    - deploy_order
+    - deploy_auth
