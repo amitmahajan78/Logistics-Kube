@@ -24,6 +24,10 @@ kubectl get statefulsets.apps,pod,deployments,svc --namespace=project-logistics
 kubectl get pv,pvc --namespace=project-logistics
 kubectl apply -f create-topics.yaml --namespace=project-logistics
 
+### deploy kafka host config
+
+kubectl create -f kafka-host-configmap.yaml --namespace=project-logistics
+
 # Create the configmap, which contains details such as the broker DNS names, topic name and consumer group ID
 
 kubectl apply -f test/k8s/config.yaml --namespace=project-logistics
@@ -51,11 +55,6 @@ configmap "kafka-client-config" deleted
 deployment.apps "node-test-consumer" deleted
 deployment.apps "node-test-producer" deleted
 service "node-test-producer" deleted
-
-# Delete the Kafka cluster
-
-kubectl delete kafka kafka-cluster
-kafka.kafka.strimzi.io "kafka-cluster" deleted
 
 # Delete the Strimzi cluster operator
 
