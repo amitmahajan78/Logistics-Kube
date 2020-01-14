@@ -71,6 +71,8 @@ deploy_auth:
     - kubectl create -f deploy-auth.yaml --namespace=project-logistics
 
 deploy_order:
+  dependencies:
+    - deploy_auth
   image:
     name: lachlanevenson/k8s-kubectl:latest
     entrypoint: ["/bin/sh", "-c"]
@@ -83,10 +85,10 @@ deploy_order:
     - kubectl create -f orderdb-configmap.yaml --namespace=project-logistics
     - kubectl create -f deploy-postgres-order.yaml --namespace=project-logistics
     - kubectl create -f deploy-order-app.yaml --namespace=project-logistics
-  dependencies:
-    - deploy_auth
 
 deploy_query:
+  dependencies:
+    - deploy_auth
   image:
     name: lachlanevenson/k8s-kubectl:latest
     entrypoint: ["/bin/sh", "-c"]
@@ -99,10 +101,10 @@ deploy_query:
     - kubectl create -f querydb-configmap.yaml --namespace=project-logistics
     - kubectl create -f deploy-postgres-query.yaml --namespace=project-logistics
     - kubectl create -f deploy-query-app.yaml --namespace=project-logistics
-  dependencies:
-    - deploy_auth
 
 deploy_stock:
+  dependencies:
+    - deploy_auth
   image:
     name: lachlanevenson/k8s-kubectl:latest
     entrypoint: ["/bin/sh", "-c"]
@@ -115,10 +117,11 @@ deploy_stock:
     - kubectl create -f stockdb-configmap.yaml --namespace=project-logistics
     - kubectl create -f deploy-postgres-stock.yaml --namespace=project-logistics
     - kubectl create -f deploy-stock-app.yaml --namespace=project-logistics
-  dependencies:
-    - deploy_auth
 
 deploy_shipment:
+  dependencies:
+    - deploy_order
+    - deploy_auth
   image:
     name: lachlanevenson/k8s-kubectl:latest
     entrypoint: ["/bin/sh", "-c"]
@@ -129,6 +132,3 @@ deploy_shipment:
     - kubectl version
     - cd EKS/09-ShipmentApp
     - kubectl create -f deploy-shipment-app.yaml --namespace=project-logistics
-  dependencies:
-    - deploy_order
-    - deploy_auth
