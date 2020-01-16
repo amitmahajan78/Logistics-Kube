@@ -78,6 +78,7 @@ deploy_order:
   stage: base_app
   environment:
     name: live
+  when: manual
   script:
     - kubectl version
     - cd EKS/06-OrderApp
@@ -94,6 +95,7 @@ deploy_query:
   stage: app
   environment:
     name: live
+  when: manual
   script:
     - kubectl version
     - cd EKS/07-QueryApp
@@ -108,6 +110,7 @@ deploy_stock:
   stage: app
   environment:
     name: live
+  when: manual
   script:
     - kubectl version
     - cd EKS/08-StockApp
@@ -122,6 +125,7 @@ deploy_shipment:
   stage: app
   environment:
     name: live
+  when: manual
   script:
     - kubectl version
     - cd EKS/09-ShipmentApp
