@@ -1,6 +1,7 @@
 stages:
   - storage
   - messaging
+  - base_app
   - app
 
 deploy_efs:
@@ -57,7 +58,7 @@ deploy_auth:
   image:
     name: lachlanevenson/k8s-kubectl:latest
     entrypoint: ["/bin/sh", "-c"]
-  stage: app
+  stage: base_app
   environment:
     name: live
   when: manual
@@ -71,12 +72,10 @@ deploy_auth:
     - kubectl create -f deploy-auth.yaml --namespace=project-logistics
 
 deploy_order:
-  dependencies:
-    - deploy_auth
   image:
     name: lachlanevenson/k8s-kubectl:latest
     entrypoint: ["/bin/sh", "-c"]
-  stage: app
+  stage: base_app
   environment:
     name: live
   script:
@@ -103,8 +102,6 @@ deploy_query:
     - kubectl create -f deploy-query-app.yaml --namespace=project-logistics
 
 deploy_stock:
-  dependencies:
-    - deploy_auth
   image:
     name: lachlanevenson/k8s-kubectl:latest
     entrypoint: ["/bin/sh", "-c"]
@@ -119,9 +116,6 @@ deploy_stock:
     - kubectl create -f deploy-stock-app.yaml --namespace=project-logistics
 
 deploy_shipment:
-  dependencies:
-    - deploy_order
-    - deploy_auth
   image:
     name: lachlanevenson/k8s-kubectl:latest
     entrypoint: ["/bin/sh", "-c"]
