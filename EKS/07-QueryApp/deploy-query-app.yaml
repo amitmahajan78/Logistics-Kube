@@ -33,7 +33,7 @@ spec:
         tier: apis
     spec:
       containers:
-        - image: amitmahajan/logistics-query-api:0.1
+        - image: amitmahajan/query-service:2.0
           name: query-service
           env:
             - name: POSTGRESQL_USERNAME

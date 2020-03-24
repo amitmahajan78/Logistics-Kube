@@ -33,7 +33,7 @@ spec:
         tier: apis
     spec:
       containers:
-        - image: amitmahajan/logistics-shipment-api:0.1
+        - image: amitmahajan/shipment-service:2.0
           name: shipment-service
           env:
             - name: POSTGRESQL_USERNAME

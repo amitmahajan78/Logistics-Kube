@@ -1,32 +1,36 @@
-## Installing Helm
+## Create a new kafka namespace for the Strimzi Kafka Cluster Operator.
 
-I use Homebrew, so the installation was pretty straightforward: brew install kubernetes-helm.
+\$ kubectl create ns kafka
 
-Alternatively, to install helm, run the following:
-\$ cd ~/eks-kafka-strimzi
+## Deploy the CRDs and role-based access control (RBAC) resources to manage the CRDs
 
-\$ curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
+\$ kubectl apply -f install/cluster-operator/ -n kafka
 
-\$ chmod +x get_helm.sh
+## Give permission to the Cluster Operator to watch the project-logistics namespace.
 
-\$ ./get_helm.sh
+\$ kubectl apply -f install/cluster-operator/020-RoleBinding-strimzi-cluster-operator.yaml -n project-logistics
 
-## Setup and deploy kafka operator
+\$ kubectl apply -f install/cluster-operator/032-RoleBinding-strimzi-cluster-operator-topic-operator-delegation.yaml -n project-logistics
 
-kubectl apply -f rbac.yaml --namespace=project-logistics
-helm init --service-account=tiller
-helm repo add strimzi http://strimzi.io/charts/
-helm search strim
-helm install strimzi/strimzi-kafka-operator --namespace=project-logistics
-kubectl get all --namespace=project-logistics
-kubectl apply -f kafka-cluster.Kafka.yaml --namespace=project-logistics
-kubectl get statefulsets.apps,pod,deployments,svc --namespace=project-logistics
-kubectl get pv,pvc --namespace=project-logistics
-kubectl apply -f create-topics.yaml --namespace=project-logistics
+\$ kubectl apply -f install/cluster-operator/031-RoleBinding-strimzi-cluster-operator-entity-operator-delegation.yaml -n project-logistics
+
+\$ kubectl get all --namespace=kafka
+
+## With Strimzi installed, you create a Kafka cluster, then a topic within the cluster.
+
+\$ kubectl create -f kafka-cluster.Kafka.yaml --namespace=project-logistics
+
+\$ kubectl wait kafka/kafka-cluster --for=condition=Ready --timeout=300s -n project-logistics
+
+\$ kubectl get statefulsets.apps,pod,deployments,svc --namespace=project-logistics
+
+\$ kubectl get pv,pvc --namespace=project-logistics
+
+\$ kubectl apply -f create-topics.yaml --namespace=project-logistics
 
 ### deploy kafka host config
 
-kubectl create -f kafka-host-configmap.yaml --namespace=project-logistics
+\$ kubectl create -f kafka-host-configmap.yaml --namespace=project-logistics
 
 # Create the configmap, which contains details such as the broker DNS names, topic name and consumer group ID
 
@@ -58,7 +62,7 @@ service "node-test-producer" deleted
 
 # Delete the Strimzi cluster operator
 
-kubectl delete deployments. strimzi-cluster-operator
+kubectl delete deployments. strimzi-cluster-operator --namespace=project-logistics
 deployment.extensions "strimzi-cluster-operator" deleted
 
 # Manually delete the persistent volumes

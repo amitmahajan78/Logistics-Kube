@@ -33,7 +33,7 @@ spec:
         tier: apis
     spec:
       containers:
-        - image: amitmahajan/logistics-stock-api:0.1
+        - image: amitmahajan/stock-service:2.0
           name: stock-service
           env:
             - name: POSTGRESQL_USERNAME
