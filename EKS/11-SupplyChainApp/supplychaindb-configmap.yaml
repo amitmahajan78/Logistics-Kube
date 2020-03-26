@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: supplychaindb-config
+  labels:
+    app: supplychaindb
+data:
+  POSTGRES_DB: supplychain_db
+  POSTGRES_USER: orderdemo
+  POSTGRES_PASSWORD: secret

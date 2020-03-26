@@ -1,60 +1,60 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: logistics-query-service
+  name: logistics-supplychain-service
   labels:
     app: logistics
 spec:
   ports:
-    - port: 9003
-      targetPort: 9003
+    - port: 9092
+      targetPort: 9092
   selector:
-    app: query-service
+    app: supplychain-service
     tier: apis
   type: LoadBalancer
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
-  name: logistics-query-service
+  name: logistics-supplychain-service
   labels:
     app: logistics
 spec:
   selector:
     matchLabels:
-      app: query-service
+      app: supplychain-service
       tier: apis
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: query-service
+        app: supplychain-service
         tier: apis
     spec:
       containers:
-        - image: amitmahajan/query-service:2.2
-          name: query-service
+        - image: amitmahajan/supply-chain:2.3
+          name: supplychain-service
           env:
             - name: POSTGRESQL_USERNAME
               valueFrom:
                 configMapKeyRef:
-                  name: querydb-config
+                  name: supplychaindb-config
                   key: POSTGRES_USER
             - name: POSTGRESQL_PASSWORD
               valueFrom:
                 configMapKeyRef:
-                  name: querydb-config
+                  name: supplychaindb-config
                   key: POSTGRES_PASSWORD
-            - name: DB_HOST_IP
-              value: logistics-query-db
-            - name: AUTH_SERVER_URL
-              value: logistics-auth-service
+            - name: DB_INFRA_HOST_IP
+              value: logistics-supplychain-db
+            - name: GATEWAY_URL
+              value: logistics-gateway-service
             - name: KAFKA_INFRA_HOST_IP
               valueFrom:
                 configMapKeyRef:
                   name: kafkahost-config
                   key: KAFKA_HOST
           ports:
-            - containerPort: 9003
-              name: query-service
+            - containerPort: 9092
+              name: sc-service

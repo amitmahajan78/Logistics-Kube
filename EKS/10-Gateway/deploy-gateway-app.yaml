@@ -33,7 +33,7 @@ spec:
         tier: apis
     spec:
       containers:
-        - image: amitmahajan/gateway:2.0
+        - image: amitmahajan/gateway:2.1
           name: gateway-service
           env:
             - name: AUTH_SERVER_URL
