@@ -5,6 +5,10 @@ display available options and properties:
 ```bash
 eksctl create cluster --help
 ```
+## generate ssh key and import public key to AWS EC2
+
+test -f $HOME/.ssh/id_rsa || ( install -m 0700 -d $HOME/.ssh && ssh-keygen -b 2048 -t rsa -f $HOME/.ssh/id_rsa -q -N "" )
+
 
 ## creation
 

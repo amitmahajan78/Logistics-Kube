@@ -3,33 +3,33 @@ kind: Service
 metadata:
   name: logistics-shipment-service
   labels:
-    app: logistics
+    app: shipment
 spec:
   ports:
-    - port: 9002
-      targetPort: 9002
+    - name: http
+      port: 9002
   selector:
-    app: shipment-service
+    app: shipment
     tier: apis
-  type: LoadBalancer
+  clusterIP: None
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
   name: logistics-shipment-service
   labels:
-    app: logistics
+    app: shipment
 spec:
   selector:
     matchLabels:
-      app: shipment-service
+      app: shipment
       tier: apis
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: shipment-service
+        app: shipment
         tier: apis
     spec:
       containers:

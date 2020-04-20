@@ -40,10 +40,3 @@ spec:
           ports:
             - containerPort: 5432
               name: order-db
-          volumeMounts:
-            - name: orderdb-persistent-storage
-              mountPath: /var/lib/postgresql/order/data
-      volumes:
-        - name: orderdb-persistent-storage
-          persistentVolumeClaim:
-            claimName: efs-postgres

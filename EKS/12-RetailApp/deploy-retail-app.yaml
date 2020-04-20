@@ -5,13 +5,42 @@ metadata:
   labels:
     app: retail
 spec:
-  ports:
-    - port: 3000
-      targetPort: 3000
   selector:
-    app: retail-service
+    app: retail
     tier: app
+  ports:
+    - name: http
+      port: 80
   type: LoadBalancer
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: retail-app-upcoming
+  labels:
+    app: retail
+spec:
+  selector:
+    matchLabels:
+      app: retail
+      tier: app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: retail
+        tier: app
+        version: upcoming
+    spec:
+      containers:
+        - image: amitmahajan/retail-app:2.9-upcoming
+          name: retail-app
+          env:
+            - name: REACT_APP_API_URL
+              value: http://a85d3ee8b7ce111eaaa810af579253e9-294231304.eu-west-2.elb.amazonaws.com:8000/api
+          ports:
+            - containerPort: 80
+              name: retail-app
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
@@ -22,22 +51,24 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: retail-service
+      app: retail
       tier: app
-  strategy:
-    type: Recreate
+  replicas: 1
   template:
     metadata:
       labels:
-        app: retail-service
+        app: retail
         tier: app
+        version: latest
     spec:
       containers:
-        - image: amitmahajan/retail-app:2.3
+        - image: amitmahajan/retail-app:2.9
           name: retail-app
           env:
             - name: REACT_APP_API_URL
-              value: http://a902f947d6f2e11eaab5802c43b171f6-1237513784.eu-west-2.elb.amazonaws.com:8000/api
+              value: http://a85d3ee8b7ce111eaaa810af579253e9-294231304.eu-west-2.elb.amazonaws.com:8000/api
           ports:
-            - containerPort: 3000
+            - containerPort: 80
               name: retail-app
+
+

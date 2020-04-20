@@ -10,7 +10,7 @@ nodeGroups:
     instanceType: t3.medium
     desiredCapacity: 3
     ssh: # use existing EC2 key
-      publicKeyPath: /Users/amitmahajan/.ssh/eks-keys.pub
+      publicKeyPath: /Users/amitmahajan/.ssh/eks-cluster-key.pub
   #- name: ng-group-mixed
   #  minSize: 3
   #  maxSize: 5
@@ -20,4 +20,4 @@ nodeGroups:
   #    onDemandBaseCapacity: 0
   #    onDemandPercentageAboveBaseCapacity: 50
   #  ssh:
-  #    publicKeyPath: /Users/amitmahajan/.ssh/eks-keys.pub
+  #    publicKeyPath: /Users/amitmahajan/.ssh/eks-istio.pem

@@ -1,0 +1,22 @@
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: retail-app
+spec:
+  hosts:  
+    - "*"
+  gateways:
+    - ingress-gateway-configuration
+  http:
+    - match:
+        - headers:
+            x-user-header:
+              exact: exp-user
+      route:
+        - destination:
+            host: retail-app
+            subset: upcoming
+    - route:
+        - destination:
+            host: retail-app
+            subset: latest

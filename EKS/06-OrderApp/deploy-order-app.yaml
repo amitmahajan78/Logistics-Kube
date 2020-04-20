@@ -3,37 +3,37 @@ kind: Service
 metadata:
   name: logistics-order-service
   labels:
-    app: logistics
+    app: order
 spec:
   ports:
-    - port: 9001
-      targetPort: 9001
+    - name: http
+      port: 9001
   selector:
-    app: order-service
+    app: order
     tier: apis
-  type: LoadBalancer
+  clusterIP: None
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
   name: logistics-order-service
   labels:
-    app: logistics
+    app: order
 spec:
   selector:
     matchLabels:
-      app: order-service
+      app: order
       tier: apis
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: order-service
+        app: order
         tier: apis
     spec:
       containers:
-        - image: amitmahajan/order-service:2.0
+        - image: amitmahajan/order-service:2.1
           name: order-service
           env:
             - name: POSTGRESQL_USERNAME

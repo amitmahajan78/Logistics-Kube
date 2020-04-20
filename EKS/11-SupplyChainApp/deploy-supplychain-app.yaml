@@ -3,33 +3,33 @@ kind: Service
 metadata:
   name: logistics-supplychain-service
   labels:
-    app: logistics
+    app: supplychain
 spec:
-  ports:
-    - port: 9092
-      targetPort: 9092
   selector:
-    app: supplychain-service
+    app: supplychain
     tier: apis
-  type: LoadBalancer
+  ports:
+    - name: http
+      port: 9092
+  type: ClusterIP
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
   name: logistics-supplychain-service
   labels:
-    app: logistics
+    app: supplychain
 spec:
   selector:
     matchLabels:
-      app: supplychain-service
+      app: supplychain
       tier: apis
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: supplychain-service
+        app: supplychain
         tier: apis
     spec:
       containers:

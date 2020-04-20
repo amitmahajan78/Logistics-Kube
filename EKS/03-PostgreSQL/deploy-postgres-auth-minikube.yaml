@@ -1,49 +1,42 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: logistics-order-db
+  name: logistics-auth-db
   labels:
-    app: order
+    app: auth
 spec:
   ports:
     - port: 5432
   selector:
-    app: order
+    app: auth
     tier: database
   clusterIP: None
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
-  name: logistics-order-db
+  name: logistics-auth-db
   labels:
-    app: order
+    app: auth
 spec:
   selector:
     matchLabels:
-      app: order
+      app: auth
       tier: database
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: order
+        app: auth
         tier: database
     spec:
       containers:
         - image: postgres:latest
-          name: postgresdb
+          name: auth-db
           envFrom:
             - configMapRef:
-                name: orderdb-config
+                name: authdb-config
           ports:
             - containerPort: 5432
-              name: order-db
-          volumeMounts:
-            - name: orderdb-persistent-storage
-              mountPath: /var/lib/postgresql/order/data
-      volumes:
-        - name: orderdb-persistent-storage
-          persistentVolumeClaim:
-            claimName: efs-postgres
+              name: auth-db

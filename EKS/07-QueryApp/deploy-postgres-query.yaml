@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: logistics-query-db
   labels:
-    app: postgres-query
+    app: query
 spec:
   ports:
     - port: 5432
   selector:
-    app: postgres-query
+    app: query
     tier: database
   clusterIP: None
 ---
@@ -17,18 +17,18 @@ kind: Deployment
 metadata:
   name: logistics-query-db
   labels:
-    app: postgres-query
+    app: query
 spec:
   selector:
     matchLabels:
-      app: postgres-query
+      app: query
       tier: database
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: postgres-query
+        app: query
         tier: database
     spec:
       containers:

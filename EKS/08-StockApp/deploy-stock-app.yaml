@@ -3,33 +3,33 @@ kind: Service
 metadata:
   name: logistics-stock-service
   labels:
-    app: logistics
+    app: stock
 spec:
   ports:
-    - port: 9004
-      targetPort: 9004
+    - name: http
+      port: 9004
   selector:
-    app: stock-service
+    app: stock
     tier: apis
-  type: LoadBalancer
+  clusterIP: None
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
   name: logistics-stock-service
   labels:
-    app: logistics
+    app: stock
 spec:
   selector:
     matchLabels:
-      app: stock-service
+      app: stock
       tier: apis
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: stock-service
+        app: stock
         tier: apis
     spec:
       containers:

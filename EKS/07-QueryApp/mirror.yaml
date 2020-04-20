@@ -1,0 +1,17 @@
+
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: logistics-query-service
+spec:
+  hosts:
+    - logistics-query-service
+  http:
+  - route:
+    - destination:
+        host: logistics-query-service
+        subset: latest
+    mirror:
+      host: logistics-query-service
+      subset: upcoming
+    mirror_percent: 100

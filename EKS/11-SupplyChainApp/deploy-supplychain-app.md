@@ -13,9 +13,11 @@ kubectl create -f deploy-postgres-supplychain.yaml --namespace=project-logistics
 ## Test Postgres connection and create shedlock table
 
 ```
-kubectl exec -it <logistics-supplychain-db pod id> --namespace=project-logistics bash
+kubectl exec -it logistics-supplychain-db-86b55ccf9f-8gwx7 --namespace=project-logistics bash
 psql -h localhost -U orderdemo --password -p 5432 supplychain_db
 ```
+
+PSQL Commands: https://www.postgresqltutorial.com/psql-commands/
 
 ### create following table
 

@@ -1,0 +1,31 @@
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: logistics-query-service
+spec:
+  hosts:
+    - logistics-query-service
+  http:
+    - route:
+        - destination:
+            host: logistics-query-service
+            subset: latest
+          weight: 90
+        - destination:
+            host: logistics-query-service
+            subset: upcoming
+          weight: 10
+---
+kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: logistics-query-service
+spec:
+  host: logistics-query-service
+  subsets:
+    - labels:
+        version: latest
+      name: latest
+    - labels:
+        version: upcoming
+      name: upcoming

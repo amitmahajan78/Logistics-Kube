@@ -3,33 +3,34 @@ kind: Service
 metadata:
   name: logistics-gateway-service
   labels:
-    app: logistics
+    app: gateway
 spec:
   ports:
-    - port: 9090
+    - name: http
+      port: 9090
       targetPort: 9090
+  type: LoadBalancer  
   selector:
-    app: gateway-service
+    app: gateway
     tier: apis
-  type: LoadBalancer
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
   name: logistics-gateway-service
   labels:
-    app: logistics
+    app: gateway
 spec:
   selector:
     matchLabels:
-      app: gateway-service
+      app: gateway
       tier: apis
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: gateway-service
+        app: gateway
         tier: apis
     spec:
       containers:

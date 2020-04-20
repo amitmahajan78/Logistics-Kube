@@ -8,5 +8,5 @@ install the package *amazon-efs-utils* on all worker nodes
 
 
 ```
-ssh -i <<eks-course.pem>> ec2-user@<<ec2-workernode>> "sudo yum install -y amazon-efs-utils"
+ssh -i ~/.ssh/eks-cluster-key ec2-user@3.11.80.165 "sudo yum install -y amazon-efs-utils"
 ```

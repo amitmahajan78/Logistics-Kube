@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: logistics-stock-db
   labels:
-    app: postgres-stock
+    app: stock
 spec:
   ports:
     - port: 5432
   selector:
-    app: postgres-stock
+    app: stock
     tier: database
   clusterIP: None
 ---
@@ -17,18 +17,18 @@ kind: Deployment
 metadata:
   name: logistics-stock-db
   labels:
-    app: postgres-stock
+    app: stock
 spec:
   selector:
     matchLabels:
-      app: postgres-stock
+      app: stock
       tier: database
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: postgres-stock
+        app: stock
         tier: database
     spec:
       containers:

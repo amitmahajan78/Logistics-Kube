@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: logistics-auth-db
   labels:
-    app: postgres-auth
+    app: auth
 spec:
   ports:
     - port: 5432
   selector:
-    app: postgres-auth
+    app: auth
     tier: database
   clusterIP: None
 ---
@@ -17,29 +17,29 @@ kind: Deployment
 metadata:
   name: logistics-auth-db
   labels:
-    app: postgres-auth
+    app: auth
 spec:
   selector:
     matchLabels:
-      app: postgres-auth
+      app: auth
       tier: database
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: postgres-auth
+        app: auth
         tier: database
     spec:
       containers:
         - image: postgres:latest
-          name: postgresdb
+          name: auth-db
           envFrom:
             - configMapRef:
                 name: authdb-config
           ports:
             - containerPort: 5432
-              name: postgres-auth
+              name: auth-db
           volumeMounts:
             - name: authdb-persistent-storage
               mountPath: /var/lib/postgresql/auth/data

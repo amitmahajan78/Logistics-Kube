@@ -1,0 +1,26 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: efs-postgres-vol
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/efs-postgres-vol"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: efs-postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+  volumeName: efs-postgres-vol
+  resources:
+    requests:
+      storage: 5Gi

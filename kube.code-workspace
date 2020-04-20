@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "/Users/amitmahajan/Workspace/Istio-Udemy"
+		},
+		{
+			"path": "../retail-app"
+		},
+		{
+			"path": "../retail-bff"
+		}
+	]
+}

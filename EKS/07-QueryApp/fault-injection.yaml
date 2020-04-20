@@ -1,0 +1,26 @@
+
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: logistics-query-service
+spec:
+  hosts:
+    - logistics-query-service
+  http:
+  - fault:
+      abort:
+        httpStatus: 503
+        percentage:
+          value: 50
+    match:
+    - headers:
+        x-release-header:
+          exact: canary
+    route:
+    - destination:
+        host: logistics-query-service
+        subset: upcoming
+  - route:
+      - destination:
+          host: logistics-query-service
+          subset: upcoming
