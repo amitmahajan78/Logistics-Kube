@@ -9,8 +9,9 @@ kubectl apply -f 3-kiali-secret.yaml
 ## Logistics Namespace
 
 kubectl create namespace project-logistics
-kubectl label namespace project-logistics istio-injection=enabled
-kubectl get namespace -L istio-injection
+
+--kubectl label namespace project-logistics istio-injection=enabled
+--kubectl get namespace -L istio-injection
 
 ## Kafka deployment .. goto kafka folder 05-Kafka and run the scripts from there
 
@@ -51,6 +52,15 @@ kubectl create -f ../08-StockApp/deploy-stock-app.yaml --namespace=project-logis
 kubectl create -f ../09-ShipmentApp/deploy-shipment-app.yaml --namespace=project-logistics
 watch kubectl get svc,po -n project-logistics
 
+kubectl port-forward service/logistics-gateway-service 3000:9090 --namespace=project-logistics
+
+
+kubectl delete -f ../04-Auth/deploy-auth.yaml --namespace=project-logistics
+kubectl delete -f ../10-Gateway/deploy-gateway-app.yaml --namespace=project-logistics
+kubectl delete -f ../06-OrderApp/deploy-order-app.yaml --namespace=project-logistics
+kubectl delete -f ../07-QueryApp/deploy-query-app.yaml --namespace=project-logistics
+kubectl delete -f ../08-StockApp/deploy-stock-app.yaml --namespace=project-logistics
+kubectl delete -f ../09-ShipmentApp/deploy-shipment-app.yaml --namespace=project-logistics
 
 ## SupplyChain
 

@@ -5,4 +5,4 @@ metadata:
   labels:
     app: kafkahost
 data:
-  KAFKA_HOST: kafka-cluster-kafka-bootstrap
+  KAFKA_HOST: kafka-cluster-kafka-bootstrap.kafka-apps.svc.cluster.local
