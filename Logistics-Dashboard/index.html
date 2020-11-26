@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<!-- 
+* Bootstrap Simple Admin Template
+* Version: 1.2
+* Author: Alexis Luna
+* Copyright 2020 Alexis Luna
+* Website: https://github.com/alexis-luna/bootstrap-simple-admin-template
+-->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Dashboard | Start Bootstrap</title>
+    <link href="assets/vendor/bootstrap4/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="assets/css/master.css" rel="stylesheet" />
+    <link href="assets/vendor/chartsjs/Chart.min.css" rel="stylesheet" />
+    <link href="assets/vendor/flagiconcss3/css/flag-icon.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/tabulator-tables@4.8.4/dist/css/tabulator.min.css" rel="stylesheet">
+
+</head>
+<!-- Resources -->
+<script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/plugins/timeline.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/plugins/bullets.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.8.4/dist/js/tabulator.min.js"></script>
+
+<!-- Styles -->
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 600px;
+    }
+
+    /*Theme the Tabulator element*/
+    #example-table-theme {
+        background-color: #ccc;
+        border: 1px solid #333;
+        border-radius: 10px;
+    }
+
+    /*Theme the header*/
+    #example-table-theme .tabulator-header {
+        background-color: #333;
+        color: #fff;
+    }
+
+    /*Allow column header names to wrap lines*/
+    #example-table-theme .tabulator-header .tabulator-col,
+    #example-table-theme .tabulator-header .tabulator-col-row-handle {
+        white-space: normal;
+    }
+
+    /*Color the table rows*/
+    #example-table-theme .tabulator-tableHolder .tabulator-table .tabulator-row {
+        color: #fff;
+        background-color: #666;
+    }
+
+    /*Color even rows*/
+    #example-table-theme .tabulator-tableHolder .tabulator-table .tabulator-row:nth-child(even) {
+        background-color: #444;
+    }
+</style>
+
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script>
+
+
+
+    var config = {
+        headers: { "Access-Control-Allow-Origin": "*" },
+    };
+
+
+    window.setInterval(function () {
+        var newOrder = 0;
+        var shippedOrder = 0;
+        var cancelledOrder = 0;
+        var closedOrder = 0;
+        function makeGetRequest(path) {
+            axios.get(path, config).then(
+                (response) => {
+                    var result = response.data;
+                    //console.log(result.length);
+                    for (let i = 0, l = result.length; i < l; i++) {
+                        //console.log(result[i]);
+
+                        if (result[i][0] == "ORDER_SHIPPED") {
+                            document.getElementById("shippedOrder").innerHTML =
+                                result[i][1];
+                        }
+
+                        if (result[i][0] == "ORDER_CLOSED") {
+                            document.getElementById("closedOrder").innerHTML = result[i][1];
+                        }
+
+                        if (result[i][0] == "ORDER_PLACED") {
+                            document.getElementById("newOrder").innerHTML = result[i][1];
+                        }
+
+                        if (result[i][0] == "ORDER_CANCELLED") {
+                            document.getElementById("calcelledOrder").innerHTML =
+                                result[i][1];
+                        }
+                    }
+                },
+                (error) => {
+                    console.log(error);
+                }
+            );
+        }
+        makeGetRequest("http://localhost:9003/v2/query/orders/statusCount");
+    }, 5000);
+
+
+
+
+
+   // console.log("Enter");
+</script>
+
+
+<!-- Chart code -->
+<script>
+
+    function getRndInteger(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function createTimeline() {
+
+        var x = document.getElementById("eventWorkflow");
+        x.style.display = "block";
+
+        var timelineArray = [];
+        var endTime = [];
+        var colorSet = new am4core.ColorSet();
+        function makeGetRequest(path) {
+            axios.get(path, config).then(
+                (response) => {
+                    var result = response.data;
+                    //console.log("events .... " + result[0].orderDetailStatus);
+
+                    for (let i = 0, l = result.length; i < l; i++) {
+
+                        var timelineObj = { category: "", "start": "", end: "", "color": 10, "text": "", "textDisabled": false }
+
+                        //console.log(new Date(result[i].localDateTime).toJSON());
+
+                        if (i == 0) {
+                            timelineObj.start = result[i].localDateTime;
+                            var dt = new Date(result[i].localDateTime);
+                            endTime[i] = new Date(dt.setMilliseconds(dt.getMilliseconds() + getRndInteger(100, 500)));
+                            timelineObj.end = endTime[i];
+                        }
+                        else {
+                            timelineObj.start = endTime[i - 1];
+                            var dt = new Date(endTime[i - 1]);
+                            endTime[i] = new Date(dt.setMilliseconds(dt.getMilliseconds() + getRndInteger(100, 500)));
+                            timelineObj.end = endTime[i];
+                        }
+
+
+                        timelineObj.color = colorSet.getIndex(10 - i);
+
+                        timelineObj.text = "[bold]" + result[i].orderDetailStatus.replace("_", " ")
+
+                        timelineArray.push(timelineObj);
+                    }
+
+                    //console.log("new timeline array :: " + JSON.stringify(timelineArray));
+
+                    am4core.ready(function () {
+
+                        // Themes begin
+                        am4core.useTheme(am4themes_animated);
+                        // Themes end
+
+                        var chart = am4core.create("chartdiv", am4plugins_timeline.SerpentineChart);
+                        chart.curveContainer.padding(100, 20, 50, 20);
+                        chart.levelCount = 3;
+                        chart.yAxisRadius = am4core.percent(20);
+                        chart.yAxisInnerRadius = am4core.percent(2);
+                        chart.maskBullets = false;
+
+                        var colorSet = new am4core.ColorSet();
+
+                        chart.dateFormatter.inputDateFormat = "yyyy-MM-dd HH:mm:ss";
+                        chart.dateFormatter.dateFormat = "HH";
+
+                        chart.data = timelineArray;
+
+                        chart.fontSize = 10;
+                        chart.tooltipContainer.fontSize = 10;
+
+                        var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+                        categoryAxis.dataFields.category = "category";
+                        categoryAxis.renderer.grid.template.disabled = true;
+                        categoryAxis.renderer.labels.template.paddingRight = 25;
+                        categoryAxis.renderer.minGridDistance = 10;
+
+                        var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+                        dateAxis.renderer.minGridDistance = 70;
+                        dateAxis.baseInterval = { count: 100, timeUnit: "millisecond" };
+                        dateAxis.renderer.tooltipLocation = 0;
+                        dateAxis.renderer.line.strokeDasharray = "1,4";
+                        dateAxis.renderer.line.strokeOpacity = 0.5;
+                        dateAxis.tooltip.background.fillOpacity = 0.2;
+                        dateAxis.tooltip.background.cornerRadius = 5;
+                        dateAxis.tooltip.label.fill = new am4core.InterfaceColorSet().getFor("alternativeBackground");
+                        dateAxis.tooltip.label.paddingTop = 7;
+                        dateAxis.endLocation = 0;
+                        dateAxis.startLocation = -0.5;
+
+                        var labelTemplate = dateAxis.renderer.labels.template;
+                        labelTemplate.verticalCenter = "middle";
+                        labelTemplate.fillOpacity = 0.4;
+                        labelTemplate.background.fill = new am4core.InterfaceColorSet().getFor("background");
+                        labelTemplate.background.fillOpacity = 1;
+                        labelTemplate.padding(7, 7, 7, 7);
+
+                        var series = chart.series.push(new am4plugins_timeline.CurveColumnSeries());
+                        series.columns.template.height = am4core.percent(15);
+
+                        series.dataFields.openDateX = "start";
+                        series.dataFields.dateX = "end";
+                        series.dataFields.categoryY = "category";
+                        series.baseAxis = categoryAxis;
+                        series.columns.template.propertyFields.fill = "color"; // get color from data
+                        series.columns.template.propertyFields.stroke = "color";
+                        series.columns.template.strokeOpacity = 0;
+                        series.columns.template.fillOpacity = 0.6;
+
+                        var imageBullet1 = series.bullets.push(new am4plugins_bullets.PinBullet());
+                        imageBullet1.locationX = 1;
+                        imageBullet1.propertyFields.stroke = "color";
+                        imageBullet1.background.propertyFields.fill = "color";
+                        imageBullet1.image = new am4core.Image();
+                        imageBullet1.image.propertyFields.href = "icon";
+                        imageBullet1.image.scale = 0.5;
+                        imageBullet1.circle.radius = am4core.percent(100);
+                        imageBullet1.dy = -5;
+
+
+                        var textBullet = series.bullets.push(new am4charts.LabelBullet());
+                        textBullet.label.propertyFields.text = "text";
+                        textBullet.disabled = true;
+                        textBullet.propertyFields.disabled = "textDisabled";
+                        textBullet.label.strokeOpacity = 0;
+                        textBullet.locationX = 1;
+                        textBullet.dy = - 100;
+                        textBullet.label.textAlign = "middle";
+
+                        chart.scrollbarX = new am4core.Scrollbar();
+                        chart.scrollbarX.align = "center"
+                        chart.scrollbarX.width = am4core.percent(75);
+                        chart.scrollbarX.opacity = 0.5;
+
+                        var cursor = new am4plugins_timeline.CurveCursor();
+                        chart.cursor = cursor;
+                        cursor.xAxis = dateAxis;
+                        cursor.yAxis = categoryAxis;
+                        cursor.lineY.disabled = true;
+                        cursor.lineX.strokeDasharray = "1,4";
+                        cursor.lineX.strokeOpacity = 1;
+
+                        dateAxis.renderer.tooltipLocation2 = 0;
+                        categoryAxis.cursorTooltipEnabled = false;
+
+
+                        var label = chart.createChild(am4core.Label);
+                        label.text = "Timeline"
+                        label.isMeasured = false;
+                        label.y = am4core.percent(40);
+                        label.x = am4core.percent(5);
+                        label.horizontalCenter = "middle";
+                        label.fontSize = 20;
+
+                    }); // end am4core.ready()
+
+                },
+                (error) => {
+                    console.log(error);
+                }
+            );
+        }
+        makeGetRequest("http://localhost:9003/v2/query/orders/events/" + document.getElementById("orderIdevent").value);
+    };
+</script>
+
+
+<body>
+    <div class="wrapper">
+        <div id="body" class="active">
+            <nav class="navbar navbar-expand-lg navbar-white bg-white">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent"></div>
+            </nav>
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="page-title">
+                        <h3>Supply Chain View</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-6 col-lg-3 mt-3">
+                            <div class="card">
+                                <div class="content">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="icon-big text-center">
+                                                <i class="teal fas fa-shopping-cart"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <div class="detail text-center">
+                                                <p>New Orders</p>
+                                                <span class="number" id="newOrder">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="footer">
+                                        <hr />
+                                        <div class="stats">
+                                            <i class="fas fa-redo-alt"></i> Updated every 30 minutes
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-6 col-lg-3 mt-3">
+                            <div class="card">
+                                <div class="content">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="icon-big text-center">
+                                                <i class="olive fas fa-shipping-fast"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <div class="detail text-center">
+                                                <p>Shipped Orders</p>
+                                                <span class="number" id="shippedOrder">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="footer">
+                                        <hr />
+                                        <div class="stats">
+                                            <i class="fas fa-calendar"></i> In this current Month
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-6 col-lg-3 mt-3">
+                            <div class="card">
+                                <div class="content">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="icon-big text-center">
+                                                <i class="orange fas fa-clipboard-check"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <div class="detail text-center">
+                                                <p>Closed Orders</p>
+                                                <span class="number" id="closedOrder">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="footer">
+                                        <hr />
+                                        <div class="stats">
+                                            <i class="fas fa-stopwatch"></i> In the last 24 Hour
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-6 col-lg-3 mt-3">
+                            <div class="card">
+                                <div class="content">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="icon-big text-center">
+                                                <i class="gray fas fa-window-close"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <div class="detail text-center">
+                                                <p>Cancelled Orders</p>
+                                                <span class="number" id="calcelledOrder">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="footer">
+                                        <hr />
+                                        <div class="stats">
+                                            <i class="fas fa-envelope-open-text"></i> In the last 7
+                                            days
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+
+                        <div class="col-md-12 col-lg-12">
+
+                            <div class="card">
+                                <div class="card-header">Product Fulfillment Workflow</div>
+                                <div class="card-body">
+
+                                    <h5 class="card-title">Provide Order Id to view the past and current status of a
+                                        shipment</h5>
+
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="orderIdevent">
+                                            <span class="input-group-append">
+                                                <button type="button" class="btn btn-primary"
+                                                    onclick="createTimeline()">Generate!</button>
+                                            </span>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-12 col-lg-12" id="eventWorkflow">
+                            <div class="card">
+                                <div id="chartdiv"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-12">
+
+                            <div class="card">
+                                <div class="card-header">Fulfillment Events</div>
+                                <div class="card-body">
+
+                                    <div id="example-table-theme"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script src="assets/vendor/jquery3/jquery.min.js"></script>
+            <script src="assets/vendor/bootstrap4/js/bootstrap.bundle.min.js"></script>
+            <script src="assets/vendor/fontawesome5/js/solid.min.js"></script>
+            <script src="assets/vendor/fontawesome5/js/fontawesome.min.js"></script>
+
+            <script>
+                var x = document.getElementById("eventWorkflow");
+                x.style.display = "none";
+
+                window.setInterval(function () {
+
+                    //Build Tabulator
+                    var table = new Tabulator("#example-table-theme", {
+                        height: "800px",
+                        layout: "fitColumns",
+                        ajaxURL: "http://localhost:9003/v2/query/orders/all-events",
+                        //ajaxProgressiveLoad: "scroll",
+                        placeholder: "No Data Set",
+                        pagination: "local",
+                        paginationSize: 100,
+                        movableRows: true,
+                        groupBy: "orderId",
+                        columns: [
+                            { title: "Order Id", field: "orderId" },
+                            { title: "Product Id", field: "productId" },
+                            { title: "Quantity", field: "quantity" },
+                            { title: "Order Status", field: "orderDetailStatus" },
+                            { title: "Shipment Id", field: "shipmentId" },
+                            { title: "Ship From", field: "shipFrom" },
+                            { title: "Ship To", field: "shipTo" },
+                            { title: "Event Date Time", field: "localDateTime" },
+                        ],
+                    })
+                }, 10000);
+            </script>
+</body>
+
+</html>
